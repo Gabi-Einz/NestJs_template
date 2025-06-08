@@ -1,20 +1,47 @@
 services:
-  postgres:
-    image: postgres
-    container_name: my-postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+  api:
+    command: >
+      sh -c "npm run start:prod"
+    depends_on:
+      - my_database
+      - my_redis
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "${APP_PORT}:${APP_PORT}"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_PORT=${APP_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRE_IN=${JWT_ACCESS_TOKEN_EXPIRE_IN}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_TOKEN_EXPIRE_IN=${JWT_REFRESH_TOKEN_EXPIRE_IN}
+      - THROTTLER_LIMIT=${THROTTLER_LIMIT}
+      - THROTTLER_TTL=${THROTTLER_TTL}
+    restart: unless-stopped
+
+  my_database:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
-  redis:
+  my_redis:
     image: redis:latest
-    container_name: redis
     ports:
-      - '6379:6379'
+      - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
       - redis_data:/data
     restart: unless-stopped
