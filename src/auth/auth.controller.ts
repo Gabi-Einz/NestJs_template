@@ -4,6 +4,7 @@ import { TokenResponse } from './models/TokenResponse';
 import { TokenRequest } from './models/TokenRequest';
 import { RefreshTokenRequest } from './models/RefreshTokenRequest';
 import { RefreshTokenResponse } from './models/RefreshTokenResponse';
+import { SignUpDto } from './models/sign-up.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,5 +20,10 @@ export class AuthController {
     @Body() request: RefreshTokenRequest,
   ): Promise<RefreshTokenResponse> {
     return await this.authService.refreshToken(request.refreshToken);
+  }
+
+  @Post('signUp')
+  async signUp(@Body() signUpDto: SignUpDto) {
+    return await this.authService.signUp(signUpDto);
   }
 }

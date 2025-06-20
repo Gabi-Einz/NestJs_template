@@ -4,6 +4,8 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenResponse } from './models/RefreshTokenResponse';
 import { Payload } from './models/Payload';
+import { hashSync } from 'bcrypt';
+import { SignUpDto } from './models/sign-up.dto';
 
 @Injectable()
 export class AuthService {
@@ -53,5 +55,15 @@ export class AuthService {
       console.error(error);
       throw new UnauthorizedException('invalid refresh token');
     }
+  }
+
+  async signUp(signUpDto: SignUpDto) {
+    const saltRounds = 10;
+    const encryptedPassword: string = hashSync(signUpDto.password, saltRounds);
+    return await this.userService.create({
+      name: signUpDto.userName,
+      password: encryptedPassword,
+      role: 'user',
+    });
   }
 }
