@@ -1,7 +1,7 @@
 services:
   api:
     command: >
-      sh -c "npm run start:prod"
+      sh -c "npm run start:dev"
     depends_on:
       - my_database
       - my_redis

@@ -4,8 +4,9 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenResponse } from './models/RefreshTokenResponse';
 import { Payload } from './models/Payload';
-import { hashSync } from 'bcrypt';
+import { hashSync, compareSync } from 'bcrypt';
 import { SignUpDto } from './models/sign-up.dto';
+import { User } from 'src/user/models/User';
 
 @Injectable()
 export class AuthService {
@@ -13,14 +14,7 @@ export class AuthService {
     private readonly userService: UserService,
     private jwtService: JwtService,
   ) {}
-  async createToken(
-    userName: string,
-    password: string,
-  ): Promise<TokenResponse> {
-    const user = await this.userService.findOneByName(userName);
-    if (password != user?.password) {
-      throw new UnauthorizedException();
-    }
+  async createToken(user: User): Promise<TokenResponse> {
     const payload = { sub: user.id, username: user.name, role: user.role };
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
@@ -65,5 +59,15 @@ export class AuthService {
       password: encryptedPassword,
       role: 'user',
     });
+  }
+
+  async validateUser(userName: string, password: string): Promise<User | null> {
+    const user = await this.userService.findOneByName(userName);
+
+    if (user && compareSync(password, user.password)) {
+      return user;
+    }
+
+    return null;
   }
 }
