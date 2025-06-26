@@ -7,6 +7,7 @@ import { RefreshTokenResponse } from './models/RefreshTokenResponse';
 import { SignUpDto } from './models/sign-up.dto';
 import { CurrentUser } from './decorators/auth.decorator';
 import { LocalAuthGuard } from './authentication/jwt/guards/local-auth.guard';
+import { User } from 'src/user/models/User';
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +17,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async createToken(
     @Body() request: TokenRequest,
-    @CurrentUser() user,
+    @CurrentUser() user: User,
   ): Promise<TokenResponse> {
     return await this.authService.createToken(user);
   }

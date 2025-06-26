@@ -7,7 +7,6 @@ import {
 import { ITaskRepository } from 'src/shared/interfaces/ITaskRepository';
 import { Task } from './models/Task';
 import { TaskCreationRequest } from './models/task-creation.request';
-import { RequestWithUser } from 'src/auth/models/RequestWithUser';
 import { Role } from 'src/auth/authorization/enums/role.enum';
 import { PopulateTaskResponse } from './models/populate-task.response';
 import { ITaskApiRepository } from 'src/shared/interfaces/ITaskApiRepository';
@@ -16,6 +15,7 @@ import { TASK_COMPLETED, TASK_CREATED } from './event/task.event';
 import { TaskEntity } from './models/task.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RedisService } from 'src/shared/redis/redis.service';
+import { User } from 'src/user/models/User';
 @Injectable()
 export class TaskService {
   constructor(
@@ -90,13 +90,12 @@ export class TaskService {
     return await this.iTaskRepository.updateById(taskId, task);
   }
 
-  async remove(id: number, req: RequestWithUser) {
-    const { user } = req;
+  async remove(id: number, user: User) {
     const task = await this.iTaskRepository.findOneById(id);
     if (!task) {
       throw new NotFoundException('Task not found');
     }
-    if (task.userId !== user.sub && user.role !== Role.ADMIN) {
+    if (task.userId !== user.id && user.role !== String(Role.ADMIN)) {
       throw new ForbiddenException('Not allowed to delete this task');
     }
     return this.iTaskRepository.deleteById(id);
