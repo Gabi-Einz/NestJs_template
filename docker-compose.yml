@@ -1,7 +1,7 @@
 services:
   api:
     command: >
-      sh -c "npm run start:dev"
+      sh -c "npm run migration:run && npm run start:dev"
     depends_on:
       - my_database
       - my_redis
@@ -12,7 +12,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - APP_PORT=${APP_PORT}
-      - DATABASE_URL=${DATABASE_URL}
+      #- DATABASE_URL=${DATABASE_URL}
       - DATABASE_HOST=${DATABASE_HOST}
       - DATABASE_PORT=${DATABASE_PORT}
       - DATABASE_USER=${DATABASE_USER}
@@ -27,17 +27,27 @@ services:
       - THROTTLER_LIMIT=${THROTTLER_LIMIT}
       - THROTTLER_TTL=${THROTTLER_TTL}
     restart: unless-stopped
-
+  # my_database:
+  #   image: postgres
+  #   environment:
+  #     POSTGRES_USER: ${DATABASE_USER}
+  #     POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+  #     POSTGRES_DB: ${DATABASE_NAME}
+  #   ports:
+  #     - "${DATABASE_PORT}:${DATABASE_PORT}"
+  #   volumes:
+  #     - database_data:/var/lib/postgresql/data
   my_database:
-    image: postgres
+    image: 'mariadb:10.5'
     environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
     ports:
       - "${DATABASE_PORT}:${DATABASE_PORT}"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - database_data:/var/lib/mysql
   my_redis:
     image: redis:latest
     ports:
@@ -46,5 +56,5 @@ services:
       - redis_data:/data
     restart: unless-stopped
 volumes:
-  pgdata:
+  database_data:
   redis_data:
