@@ -7,7 +7,7 @@ import { TaskModule } from './task/task.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-
+import { DatabaseModule } from './database/database.module';
 @Module({
   imports: [
     AuthModule,
@@ -22,6 +22,7 @@ import { APP_GUARD } from '@nestjs/core';
         },
       ],
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [
