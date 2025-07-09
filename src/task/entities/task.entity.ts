@@ -6,6 +6,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('task')
@@ -13,27 +14,28 @@ export class TaskEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ name: 'title' })
   title: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'description', nullable: true })
   description?: string;
 
-  @Column()
+  @Column({ name: 'completed' })
   completed: boolean;
 
-  @Column()
+  @Column({ name: 'priority' })
   priority: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.tasks, { nullable: true })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user?: UserEntity;
 
-  @Column({ nullable: true })
+  @Column({ name: 'user_id', nullable: true })
   userId?: number;
 }

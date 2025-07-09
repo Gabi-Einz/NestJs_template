@@ -1,7 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from '../entities/task.entity';
 import { Repository } from 'typeorm';
-// import { BaseTypeOrmRepository } from 'src/database/repositories/base-type-orm.repository';
 import { ITaskRepository } from 'src/shared/interfaces/ITaskRepository';
 
 export class TypeOrmTaskRepository implements ITaskRepository<TaskEntity> {
@@ -20,7 +19,7 @@ export class TypeOrmTaskRepository implements ITaskRepository<TaskEntity> {
 
   async findAllByUserId(userId: number): Promise<TaskEntity[]> {
     return await this.repository.find({
-      where: { userId },
+      where: { user: { id: userId } },
     });
   }
 
@@ -29,7 +28,7 @@ export class TypeOrmTaskRepository implements ITaskRepository<TaskEntity> {
     userId: number,
   ): Promise<TaskEntity | null> {
     return this.repository.findOne({
-      where: { id, userId },
+      where: { id, user: { id: userId } },
     });
   }
 
