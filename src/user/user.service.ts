@@ -15,7 +15,7 @@ export class UserService {
     return await this.iUserRepository.findById(userId);
   }
 
-  async create(user: Partial<User>): Promise<User> {
-    return await this.iUserRepository.create(user);
+  async create(user: Partial<User>): Promise<void> {
+    await this.iUserRepository.create(user);
   }
 }
