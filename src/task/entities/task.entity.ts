@@ -35,7 +35,4 @@ export class TaskEntity {
   @ManyToOne(() => UserEntity, (user) => user.tasks, { nullable: true })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user?: UserEntity;
-
-  @Column({ name: 'user_id', nullable: true })
-  userId?: number;
 }
