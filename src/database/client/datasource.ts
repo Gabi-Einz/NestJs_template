@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import * as dotenv from 'dotenv';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { TaskEntity } from 'src/task/entities/task.entity';
+import { UserEntity } from '../../user/entities/user.entity';
+import { TaskEntity } from '../../task/entities/task.entity';
 
 dotenv.config({
   path: '.env',
@@ -17,7 +17,8 @@ const createDatasource: () => DataSource = () => {
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
     entities: [UserEntity, TaskEntity],
-    migrations: ['src/database/migrations/*.ts'],
+    // entities: ['**/*.entity.{ts,js}'],
+    migrations: ['dist/database/migrations/*.js'],
     namingStrategy: new SnakeNamingStrategy(),
   });
 };
